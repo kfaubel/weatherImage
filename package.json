@@ -1,0 +1,31 @@
+{
+  "name": "weatherimage",
+  "version": "1.0.0",
+  "description": "Gets an image based on NWS weather data",
+  "main": "index.js",
+  "scripts": {
+    "tsc": "tsc",
+    "dev": "ts-node-dev --respawn --transpileOnly ./app.ts",
+    "prod": "tsc && node ./build/app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kfaubel/weatherImage.git"
+  },
+  "author": "Ken Faubel",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/kfaubel/weatherImage/issues"
+  },
+  "homepage": "https://github.com/kfaubel/weatherImage#readme",
+  "dependencies": {
+    "@types/express": "^4.17.0",
+    "axios": "^0.19.0",
+    "canvas": "^2.5.0",
+    "express": "^4.17.1",
+    "ts-node-dev": "^1.0.0-pre.40",
+    "typescript": "^3.5.2",
+    "xml-js": "^1.6.11"
+  }
+}
