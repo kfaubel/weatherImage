@@ -86,12 +86,24 @@ module.exports = class WeatherData {
             return false;
         }
 
+        if (weatherString === "") {
+            console.log("XML to JSON failed since weatherString is empty: ");
+            return false;
+        }
+
         try {
             this.weatherJson = JSON.parse(weatherString);
         } catch (e) {
             console.log("Parse JSON failed: " + e);
             return false;
         }
+
+        if (this.weatherJson === undefined) {
+            console.log("weatherJSON is undefined");
+            return false;
+        }
+
+        console.log("JSON: " + JSON.stringify(this.weatherJson, null, 4));
         
         // Fix up the rain forcast data: 
         //  - handle nil attributes (missing _text) 
