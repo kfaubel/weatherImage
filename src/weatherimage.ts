@@ -11,16 +11,16 @@ module.exports = class WeatherImage {
 
     public getImageStream() {
         const wData = this.weatherData;
-        const height: number = 1080; //800;
-        const width: number  = 1920; //1280;
+        const imageHeight: number = 1080; //800;
+        const imageWidth: number  = 1920; //1280;
 
         // Screen origin is the upper left corner
         const  chartOriginX = 100;               // In from the left edge
-        const  chartOriginY = height - 80;       // Down from the top (Was: Up from the bottom edge)
+        const  chartOriginY = imageHeight - 80;       // Down from the top (Was: Up from the bottom edge)
 
-        // The chartWidth will be smaller than the imageWidth but must be a multiple of 20
+        // The chartWidth will be smaller than the imageWidth but must be a multiple of 120
         // The chartHeight will be smaller than the imageHeight but must be a multiple of 100
-        const  chartWidth = 1700; // 1080;
+        const  chartWidth = 1680; // 1080;
         const  chartHeight = 900; //600;
 
         const  daysToShow = 5;                                        // for 5 days
@@ -35,20 +35,19 @@ module.exports = class WeatherImage {
         const  horizontalMajorGridInterval = 100                      // draw lines at 0 and 100
         const  horizontalGridSpacing = chartHeight / horizontalGridLines;  // vertical spacing between the horizontal lines. 600 pixels split into 10 chunks
         const  pointsPerDegree            = chartHeight/100;
-        console.log("pointsPerDegree: " + pointsPerDegree);
 
         const title: string = 'Title';
+        const topLegendLeftIndent = imageWidth - 400;
+        
 
-        const canvas = createCanvas(width, height);
-        const ctx = canvas.getContext('2d');
-
-        const largeFont: string = '32px sans-serif';
-        const mediumFont: string = '24px sans-serif';
+        const largeFont: string = '48px sans-serif';
+        const mediumFont: string = '28px sans-serif';
 
         const regularStroke: number = 3;
         const heavyStroke: number = 6;
 
-
+        const canvas = createCanvas(imageWidth, imageHeight);
+        const ctx = canvas.getContext('2d');
 
         // Canvas reference
         // origin is upper right
@@ -60,27 +59,25 @@ module.exports = class WeatherImage {
 
         // Fill the bitmap
         ctx.fillStyle = 'rgb(0, 0, 50)';
-        ctx.fillRect(0, 0, width, height);
+        ctx.fillRect(0, 0, imageWidth, imageHeight);
 
         // Draw the title
         ctx.fillStyle = 'white';
         ctx.font = largeFont;
         let textWidth: number = ctx.measureText(title).width;
-        ctx.fillText(title, (width - textWidth) / 2, 40);
+        ctx.fillText(title, (imageWidth - textWidth) / 2, 40);
 
         // Draw the color key labels        
         ctx.font = mediumFont;
 
         ctx.fillStyle = 'red';
-        ctx.fillText("Temperature", 1000, 30);
+        ctx.fillText("Temperature", topLegendLeftIndent, 30);
 
         ctx.fillStyle = 'green';
-        ctx.fillText("Dew Point", 1000, 60);
+        ctx.fillText("Dew Point", topLegendLeftIndent, 60);
 
         ctx.fillStyle = 'yellow';
-        ctx.fillText("Wind Speed", 1000, 90);
-
-        
+        ctx.fillText("Wind Speed", topLegendLeftIndent, 90);
 
         let startX: number;
         let startY: number;
@@ -253,8 +250,8 @@ module.exports = class WeatherImage {
         ctx.stroke();
 
         // Draw the axis labels
-        ctx.font = largeFont;
-        ctx.strokeStyle = 'rgb(200, 200, 200)';
+        ctx.font = mediumFont;
+        ctx.fillStyle = 'rgb(200, 200, 200)';
 
         for (let i: number = 0; i <= horizontalGridLines; i++) {
             // i = 0, 1 ..10    labelString = "0", "10" .. "100"
@@ -286,31 +283,31 @@ module.exports = class WeatherImage {
         // Deaw the temperature line
         ctx.strokeStyle = 'rgb(255, 40, 40)';
         ctx.beginPath();
-        ctx.moveTo(chartOriginX + pointsPerHour * firstHour, chartOriginY - (wData.temperature(firstHour) * chartHeight) / fullScaleDegrees);
-        for (let i: number = firstHour + 1; i <= (hoursToShow - 1); i++) {
-            ctx.lineTo(chartOriginX + pointsPerHour * i, chartOriginY - (wData.temperature(i) * chartHeight) / fullScaleDegrees);
+        ctx.moveTo(chartOriginX + pointsPerHour * firstHour, chartOriginY - (wData.temperature(0) * chartHeight) / fullScaleDegrees);
+        for (let i: number =  0; i <= (hoursToShow - firstHour - 1); i++) {
+            ctx.lineTo(chartOriginX + pointsPerHour * (i + firstHour), chartOriginY - (wData.temperature(i) * chartHeight) / fullScaleDegrees);
         }
-        ctx.lineTo(chartOriginX + pointsPerHour * hoursToShow, chartOriginY - (wData.temperature(hoursToShow) * chartHeight) / fullScaleDegrees);
+        ctx.lineTo(chartOriginX + pointsPerHour * hoursToShow, chartOriginY - (wData.temperature(hoursToShow - firstHour) * chartHeight) / fullScaleDegrees);
         ctx.stroke();
 
         // Deaw the dew point line
         ctx.strokeStyle = 'rgb(140, 240, 0)';
         ctx.beginPath();
-        ctx.moveTo(chartOriginX + pointsPerHour * firstHour, chartOriginY - (wData.dewPoint(firstHour) * chartHeight) / fullScaleDegrees);
-        for (let i: number = firstHour + 1; i <= (hoursToShow - 1); i++) {
-            ctx.lineTo(chartOriginX + pointsPerHour * i, chartOriginY - (wData.dewPoint(i) * chartHeight) / fullScaleDegrees);
+        ctx.moveTo(chartOriginX + pointsPerHour * firstHour, chartOriginY - (wData.dewPoint(0) * chartHeight) / fullScaleDegrees);
+        for (let i: number =  0; i <= (hoursToShow - firstHour - 1); i++) {
+            ctx.lineTo(chartOriginX + pointsPerHour * (i + firstHour), chartOriginY - (wData.dewPoint(i) * chartHeight) / fullScaleDegrees);
         }
-        ctx.lineTo(chartOriginX + pointsPerHour * hoursToShow, chartOriginY - (wData.dewPoint(hoursToShow) * chartHeight) / fullScaleDegrees);        
+        ctx.lineTo(chartOriginX + pointsPerHour * hoursToShow, chartOriginY - (wData.dewPoint(hoursToShow - firstHour) * chartHeight) / fullScaleDegrees);        
         ctx.stroke();
 
         // Deaw the wind speed line
         ctx.strokeStyle = 'yellow';
         ctx.beginPath();
         ctx.moveTo(chartOriginX + pointsPerHour * firstHour, chartOriginY - (wData.windSpeed(firstHour) * chartHeight) / fullScaleDegrees);
-        for (let i: number = firstHour + 1; i <= (hoursToShow - 1); i++) {
-            ctx.lineTo(chartOriginX + pointsPerHour * i, chartOriginY - (wData.windSpeed(i) * chartHeight) / fullScaleDegrees);
+        for (let i: number =  0; i <= (hoursToShow - firstHour - 1); i++) {
+            ctx.lineTo(chartOriginX + pointsPerHour * (i + firstHour), chartOriginY - (wData.windSpeed(i) * chartHeight) / fullScaleDegrees);
         }
-        ctx.lineTo(chartOriginX + pointsPerHour * hoursToShow, chartOriginY - (wData.windSpeed(hoursToShow) * chartHeight) / fullScaleDegrees);
+        ctx.lineTo(chartOriginX + pointsPerHour * hoursToShow, chartOriginY - (wData.windSpeed(hoursToShow - firstHour) * chartHeight) / fullScaleDegrees);
         ctx.stroke();
 
 

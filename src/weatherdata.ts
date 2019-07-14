@@ -5,8 +5,8 @@ module.exports = class WeatherData {
     private location: string = "";
     private rainScaleFactor = 1000; // Rain at .4 in/hr will be scaled to 100 (full range)
     private weatherJson: any = null; //
-    private url: string = "https://forecast.weather.gov/MapClick.php?lat=29.9537&lon=-90.0777&FcstType=digitalDWML"; // New Orleans
-    //private url: string = "https://forecast.weather.gov/MapClick.php?lat=41.7476&lon=-70.6676&FcstType=digitalDWML";  //Onset
+    //private url: string = "https://forecast.weather.gov/MapClick.php?lat=29.9537&lon=-90.0777&FcstType=digitalDWML"; // New Orleans
+    private url: string = "https://forecast.weather.gov/MapClick.php?lat=41.7476&lon=-70.6676&FcstType=digitalDWML";  //Onset
 
     constructor(location: string) {
         this.location = location;
@@ -37,6 +37,8 @@ module.exports = class WeatherData {
 
     async updateData() {
         let weatherXml: string = "";
+
+        console.log("URL: " + this.url);
 
         await axios.get(this.url)
             .then(function (response: any) {

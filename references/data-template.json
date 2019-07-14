@@ -1,0 +1,82 @@
+{
+    "dwml": {
+        "data": {
+            "time-layout": {
+                "start-valid-time": [
+                    {
+                        "_text": "2019-07-08T13:00:00-04:00"
+                    }
+                ]
+            }
+            },
+            "parameters": {
+                "temperature": [
+                    {
+                        "_attributes": {
+                            "type": "dew point",
+                            "time-layout": "k-p1h-n1-0"
+                        },
+                        "value": [
+                            {
+                                "_text": "59"
+                            }
+                        ]
+                    },
+                    {
+                        "_attributes": {
+                            "type": "hourly",
+                            "time-layout": "k-p1h-n1-0"
+                        },
+                        "value": [
+                            {
+                                "_text": "59"
+                            }
+                        ]
+                    }
+                ],
+            
+                "wind-speed": [
+                    {
+                        "value": [
+                            {
+                                "_text": "59"
+                            }
+                        ]
+                    }
+                ],
+            
+                "cloud-amount": [
+                    {
+                        "value": [
+                            {
+                                "_text": "59"
+                            }
+                        ]
+                    }
+                ],
+            
+                "probability-of-precipitation": [
+                    {
+                        "value": [
+                            {
+                                "_text": "59"
+                            }
+                        ]
+                    }
+                ],
+            
+                "hourly-qpf": [
+                    {
+                        "value": [
+                            {
+                                "_text": "59"
+                            }
+                        ]
+                    }
+                ]
+        }
+
+        }
+
+    }
+}

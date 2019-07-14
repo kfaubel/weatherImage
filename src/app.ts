@@ -1,7 +1,7 @@
 // lib/app.ts
 import express = require('express');
-const WeatherData = require('./build/weatherdata');
-const WeatherImage = require('./build/weatherimage');
+const WeatherData = require('./weatherdata');
+const WeatherImage = require('./weatherimage');
 
 // Create a new express application instance
 async function run() {
@@ -18,10 +18,10 @@ async function run() {
     const stream = weatherImage.getImageStream();
 
 
-
+    //console.log("__dirname: " + __dirname);
 
     const fs = require('fs');
-    const out = fs.createWriteStream(__dirname + '/test.png');
+    const out = fs.createWriteStream(__dirname +'/../test.png');
 
     stream.pipe(out);
     out.on('finish', () =>  console.log('The PNG file was created.'));

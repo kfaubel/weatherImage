@@ -7,10 +7,14 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Launch Program",
-            "program": "${workspaceFolder}\\app.ts",
+            "name": "Debug App",
+            "preLaunchTask": "tsc: build - tsconfig.json",
+ //           "preLaunchTask": "typescript",
+            "program": "${workspaceFolder}/src/app.ts",
+            "cwd" : "${workspaceFolder}",
+            "protocol": "inspector",
             "outFiles": [
-                "${workspaceFolder}/**/*.js"
+                "${workspaceFolder}/build/**/*.js"
             ]
         }
     ]
