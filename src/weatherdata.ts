@@ -1,8 +1,11 @@
 const convert = require('xml-js');
 const axios = require('axios');
 
-// Onset" https://forecast.weather.gov/MapClick.php?lat=41.7476&lon=-77.6676&FcstType=digitalDWML
+// Onset" https://forecast.weather.gov/MapClick.php?lat=41.7476&lon=-70.6676&FcstType=digitalDWML
 // NOLA   https://forecast.weather.gov/MapClick.php?lat=29.9537&lon=-90.0777&FcstType=digitalDWML
+
+// New data source : https://www.weather.gov/documentation/services-web-api
+// Not all data is present
 
 module.exports = class WeatherData {
     private lat: string = "";
@@ -11,10 +14,12 @@ module.exports = class WeatherData {
     private weatherJson: any = null; //
     private urlTemplate: string = `https://forecast.weather.gov/MapClick.php?lat=${lat}&lon=${lon}&FcstType=digitalDWML`;  //Onset
     private url: string = "";
+    private email: string = "";
 
-    constructor(lat: string, lon: string) {
+    constructor(lat: string, lon: string, email: string) {
         this.lat = lat;
         this.lon = lon;
+        this.email = email;
         this.url = this.urlTemplate;
     }
 
@@ -46,6 +51,12 @@ module.exports = class WeatherData {
         let weatherXml: string = "";
 
         console.log("URL: " + this.url);
+
+        let headers = {
+            'User-agent': this.email,
+            'Access-Control-Allow-Origin': '*'
+          };
+      
 
         await axios.get(this.url)
             .then(function (response: any) {

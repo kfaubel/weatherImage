@@ -7,7 +7,7 @@ const WeatherImage = require('./weatherimage');
 async function run() {
     const app: express.Application = express();
 
-    const weatherData = new WeatherData("41.7476", "-77.6676");
+    const weatherData = new WeatherData("41.7476", "-70.6676", 'ken@faubel.org');
 
     const result: string = await  weatherData.updateData();
 
@@ -16,7 +16,7 @@ async function run() {
         return;
     }
 
-    const weatherImage = new WeatherImage(weatherData);
+    const weatherImage = new WeatherImage(weatherData, "Forecast for Onset, MA");
 
     const stream = weatherImage.getImageStream();
 

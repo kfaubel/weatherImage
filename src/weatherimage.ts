@@ -4,9 +4,11 @@ const WeatherData = require('./weatherdata');
 //export function generateImage(wData: any) {
 module.exports = class WeatherImage {
     private weatherData: any;
+    private title: string = "";
 
-    constructor(weatherData: any) {
+    constructor(weatherData: any, title: string) {
         this.weatherData = weatherData;
+        this.title = title;
     }
 
     public getImageStream() {
@@ -36,7 +38,6 @@ module.exports = class WeatherImage {
         const  horizontalGridSpacing = chartHeight / horizontalGridLines;  // vertical spacing between the horizontal lines. 900 pixels split into 10 chunks
         const  pointsPerDegree = chartHeight/100;
 
-        const title: string = 'Title';
         const topLegendLeftIndent = imageWidth - 300;
         
         const largeFont: string  = '48px sans-serif';   // Title
@@ -46,13 +47,13 @@ module.exports = class WeatherImage {
         const regularStroke: number = 3;
         const heavyStroke: number = 6;
 
-        const backgroundColor: string = 'rgb(0, 0, 30)';
-        const titleColor: string = 'white';
-        const gridLinesColor: string = 'rgb(100, 100, 100)';
-        const majorGridLinesColor: string = '';
-        const temperatureColor: string = 'rgb(255, 40, 40)';
-        const dewPointColor: string = 'rgb(140, 240, 0)';
-        const windSpeedColor: string = 'yellow';
+        const backgroundColor: string     = 'rgb(0, 0, 30)';
+        const titleColor: string          = 'white';
+        const gridLinesColor: string      = 'rgb(100, 100, 100)';
+        const majorGridLinesColor: string = 'rgb(150, 150, 150)';
+        const temperatureColor: string    = 'rgb(255, 40, 40)';
+        const dewPointColor: string       = 'rgb(140, 240, 0)';
+        const windSpeedColor: string      = 'yellow';
 
         const canvas = createCanvas(imageWidth, imageHeight);
         const ctx = canvas.getContext('2d');
@@ -73,8 +74,8 @@ module.exports = class WeatherImage {
         // Draw the title
         ctx.fillStyle = titleColor;
         ctx.font = largeFont;
-        let textWidth: number = ctx.measureText(title).width;
-        ctx.fillText(title, (imageWidth - textWidth) / 2, 40);
+        let textWidth: number = ctx.measureText(this.title).width;
+        ctx.fillText(this.title, (imageWidth - textWidth) / 2, 60);
 
         // Draw the color key labels        
         ctx.font = smallFont;
