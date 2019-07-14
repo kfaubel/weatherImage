@@ -7,25 +7,31 @@ const WeatherImage = require('./weatherimage');
 async function run() {
     const app: express.Application = express();
 
-    const weatherData = new WeatherData("41.7476", "-70.6676", 'ken@faubel.org');
+    const weatherConfig: any = {
+        lat: "41.7476",
+        lon: "-70.6676",
+        agent: "ken@faubel.org"
+    }
+
+    const weatherData = new WeatherData(weatherConfig);
 
     const result: string = await  weatherData.updateData();
 
     if (!result) {
-        console.log("Failed to get data, no image available.")
+        console.log("Failed to get data, no image available.\n")
         return;
     }
 
     const weatherImage = new WeatherImage(weatherData, "Forecast for Onset, MA");
 
-    const stream = weatherImage.getImageStream();
+    const imageStream = weatherImage.getImageStream();
 
     //console.log("__dirname: " + __dirname);
     const fs = require('fs');
     const out = fs.createWriteStream(__dirname +'/../test.png');
 
-    stream.pipe(out);
-    out.on('finish', () =>  console.log('The PNG file was created.'));
+    imageStream.pipe(out);
+    out.on('finish', () =>  console.log('The PNG file was created.\n'));
 }
 
 run();

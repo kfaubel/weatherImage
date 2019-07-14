@@ -12,15 +12,16 @@ module.exports = class WeatherData {
     private lon: string = "";
     private rainScaleFactor = 500; // Rain at .2 in/hr will be scaled to 100 (full range)
     private weatherJson: any = null; //
-    private urlTemplate: string = `https://forecast.weather.gov/MapClick.php?lat=${lat}&lon=${lon}&FcstType=digitalDWML`;  //Onset
+    //private urlTemplate: string = `https://forecast.weather.gov/MapClick.php?lat=${this.lat}&lon=${this.lon}&FcstType=digitalDWML`;  //Onset
     private url: string = "";
-    private email: string = "";
+    private agent: string = "";
 
-    constructor(lat: string, lon: string, email: string) {
-        this.lat = lat;
-        this.lon = lon;
-        this.email = email;
-        this.url = this.urlTemplate;
+    constructor(config) {
+        this.lat = config.lat;
+        this.lon = config.lon;
+        this.agent = config.agent;
+
+        this.url = `https://forecast.weather.gov/MapClick.php?lat=${this.lat}&lon=${this.lon}&FcstType=digitalDWML`;
     }
 
     // time                     "2019-07-08T17:00:00-04:00" weatherJson.dwml.data.time-layout.start-valid-time[i]._text
@@ -53,7 +54,7 @@ module.exports = class WeatherData {
         console.log("URL: " + this.url);
 
         let headers = {
-            'User-agent': this.email,
+            'User-agent': this.agent,
             'Access-Control-Allow-Origin': '*'
           };
       
