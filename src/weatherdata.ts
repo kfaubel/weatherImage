@@ -1,17 +1,23 @@
 const convert = require('xml-js');
 const axios = require('axios');
 
+// Onset" https://forecast.weather.gov/MapClick.php?lat=41.7476&lon=-77.6676&FcstType=digitalDWML
+// NOLA   https://forecast.weather.gov/MapClick.php?lat=29.9537&lon=-90.0777&FcstType=digitalDWML
+
 module.exports = class WeatherData {
-    private location: string = "";
-    private rainScaleFactor = 1000; // Rain at .4 in/hr will be scaled to 100 (full range)
+    private lat: string = "";
+    private lon: string = "";
+    private rainScaleFactor = 500; // Rain at .2 in/hr will be scaled to 100 (full range)
     private weatherJson: any = null; //
-    //private url: string = "https://forecast.weather.gov/MapClick.php?lat=29.9537&lon=-90.0777&FcstType=digitalDWML"; // New Orleans
-    private url: string = "https://forecast.weather.gov/MapClick.php?lat=41.7476&lon=-70.6676&FcstType=digitalDWML";  //Onset
+    private urlTemplate: string = `https://forecast.weather.gov/MapClick.php?lat=${lat}&lon=${lon}&FcstType=digitalDWML`;  //Onset
+    private url: string = "";
 
-    constructor(location: string) {
-        this.location = location;
-
+    constructor(lat: string, lon: string) {
+        this.lat = lat;
+        this.lon = lon;
+        this.url = this.urlTemplate;
     }
+
     // time                     "2019-07-08T17:00:00-04:00" weatherJson.dwml.data.time-layout.start-valid-time[i]._text
     // hourly temp              "72"                        weatherJson.dwml.data.parameters.temperature[2].value[i]._text
     // dew point                "58"                        weatherJson.dwml.data.parameters.temperature[0].value[i]._text
@@ -27,6 +33,7 @@ module.exports = class WeatherData {
     // One data point per hour.
     // for heat index, no index if weatherJson.dwml.data.parameters.temperature[1].value[i]._attributes["xsi:nil"] == "true"
     // for wind gusts, no gusts if weatherJson.dwml.data.parameters.wind-speed[1].value[i]._attributes["xsi:nil"] == "true"
+
     timeString (index: number): number {return this.weatherJson.dwml.data["time-layout"]["start-valid-time"][index]._text};
     temperature(index: number): number {return this.weatherJson.dwml.data.parameters.temperature[2].value[index]._text};
     dewPoint   (index: number): number {return this.weatherJson.dwml.data.parameters.temperature[0].value[index]._text};
@@ -50,30 +57,40 @@ module.exports = class WeatherData {
                 // handle error
                 console.log("Error: " + error);
                 weatherXml = "";
-                return false;
             })
             .finally(function () {
                 // always executed
             });
 
-        const weatherString = convert.xml2json(weatherXml, { compact: true, spaces: 4 });
+        if (weatherXml === "") {
+            return false;
+        }
 
-        //console.log("weatherString: " + weatherString);
-        this.weatherJson = JSON.parse(weatherString);
-        //const result2 = convert.xml2json(weatherXml, {compact: false, spaces: 4});
+        let weatherString: string = "";
+        try {
+            weatherString = convert.xml2json(weatherXml, { compact: true, spaces: 4 });
+        } catch (e) {
+            console.log("XML to JSON failed: " + e);
+            return false;
+        }
 
-        // console.log("Compact2: " + weatherJson.dml);
-        // console.log("Compact3: " + weatherJson.dwml.data);
-
+        try {
+            this.weatherJson = JSON.parse(weatherString);
+        } catch (e) {
+            console.log("Parse JSON failed: " + e);
+            return false;
+        }
+        
+        // Fix up the rain forcast data: 
+        //  - handle nil attributes (missing _text) 
+        //  - scale by 1000.
         for (let i: number = 0; i < 120; i++) {
-            //console.log("Start Hourly-qpf[" + i +"] " + JSON.stringify(this.weatherJson.dwml.data.parameters["hourly-qpf"].value[i]._text));
             if (this.weatherJson.dwml.data.parameters["hourly-qpf"].value[i].hasOwnProperty("_text") === true) {
                 this.weatherJson.dwml.data.parameters["hourly-qpf"].value[i]._text 
                     = Math.min(this.weatherJson.dwml.data.parameters["hourly-qpf"].value[i]._text * this.rainScaleFactor, 100);
             } else {
                 this.weatherJson.dwml.data.parameters["hourly-qpf"].value[i]._text = "0.0";
             }
-            //console.log("End  Hourly-qpf[" + i +"] " + JSON.stringify(this.weatherJson.dwml.data.parameters["hourly-qpf"].value[i]._text));
         }
 
         return true;

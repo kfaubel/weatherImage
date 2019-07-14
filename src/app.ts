@@ -7,19 +7,20 @@ const WeatherImage = require('./weatherimage');
 async function run() {
     const app: express.Application = express();
 
-    console.log(WeatherData);
+    const weatherData = new WeatherData("41.7476", "-77.6676");
 
-    const weatherData = new WeatherData("lat-lon");
+    const result: string = await  weatherData.updateData();
 
-    await weatherData.updateData();
+    if (!result) {
+        console.log("Failed to get data, no image available.")
+        return;
+    }
 
     const weatherImage = new WeatherImage(weatherData);
 
     const stream = weatherImage.getImageStream();
 
-
     //console.log("__dirname: " + __dirname);
-
     const fs = require('fs');
     const out = fs.createWriteStream(__dirname +'/../test.png');
 
