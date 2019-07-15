@@ -110,7 +110,7 @@ module.exports = class WeatherData {
         }
 
         // tslint:disable-next-line:no-console
-        console.log("JSON: " + JSON.stringify(this.weatherJson, null, 4));
+        // console.log("JSON: " + JSON.stringify(this.weatherJson, null, 4));
         
         // Fix up the rain forcast data: 
         //  - handle nil attributes (missing _text) 
