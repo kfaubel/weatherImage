@@ -4,17 +4,26 @@ const WeatherData = require('./weatherdata');
 //export function generateImage(wData: any) {
 module.exports = class WeatherImage {
     private weatherData: any;
-    private title: string = "";
+    private weatherConfig: any;
 
-    constructor(weatherData: any, title: string) {
-        this.weatherData = weatherData;
-        this.title = title;
+    constructor(weatherConfig) {
+        this.weatherConfig = weatherConfig;
     }
 
-    public getImageStream() {
+    public async getImageStream() {
+        this.weatherData = new WeatherData(this.weatherConfig);
+
+        const result: string = await  this.weatherData.updateData();
+
+        if (!result) {
+            // tslint:disable-next-line:no-console
+            console.log("Failed to get data, no image available.\n")
+            return;
+        }
+
         const wData = this.weatherData;
-        const imageHeight: number = 1080; //800;
-        const imageWidth: number  = 1920; //1280;
+        const imageHeight: number = 1080; // 800;
+        const imageWidth: number  = 1920; // 1280;
 
         // Screen origin is the upper left corner
         const  chartOriginX = 100;                    // In from the left edge
@@ -23,7 +32,7 @@ module.exports = class WeatherImage {
         // The chartWidth will be smaller than the imageWidth but must be a multiple of hoursToShow
         // The chartHeight will be smaller than the imageHeight but must be a multiple of 100
         const  chartWidth = 1680; // 1080;
-        const  chartHeight = 900; //600;
+        const  chartHeight = 900; // 600;
 
         const  daysToShow = 5;                                        // for 5 days
         const  hoursToShow = daysToShow * 24;                         //   120
@@ -34,7 +43,7 @@ module.exports = class WeatherImage {
 
         const  fullScaleDegrees = 100;
         const  horizontalGridLines = fullScaleDegrees/10;             // The full scale is devided into a grid of 10. Each represents 10 degrees, percent or miles per hour
-        const  horizontalMajorGridInterval = 100                      // draw lines at 0 and 100
+        // const  horizontalMajorGridInterval = 100                      // draw lines at 0 and 100
         const  horizontalGridSpacing = chartHeight / horizontalGridLines;  // vertical spacing between the horizontal lines. 900 pixels split into 10 chunks
         const  pointsPerDegree = chartHeight/100;
 
@@ -74,8 +83,8 @@ module.exports = class WeatherImage {
         // Draw the title
         ctx.fillStyle = titleColor;
         ctx.font = largeFont;
-        let textWidth: number = ctx.measureText(this.title).width;
-        ctx.fillText(this.title, (imageWidth - textWidth) / 2, 60);
+        const textWidth: number = ctx.measureText(this.weatherConfig.title).width;
+        ctx.fillText(this.weatherConfig.title, (imageWidth - textWidth) / 2, 60);
 
         // Draw the color key labels        
         ctx.font = smallFont;
@@ -111,7 +120,7 @@ module.exports = class WeatherImage {
             startY = chartOriginY - wData.cloudCover(i) * pointsPerDegree;
             endY   = chartOriginY - wData.cloudCover(i + 1) * pointsPerDegree;
 
-            //console.log("Cover: [" + i + "] = " + " StartX: " + startX + " EndX: " + endX);
+            // console.log("Cover: [" + i + "] = " + " StartX: " + startX + " EndX: " + endX);
 
             ctx.beginPath();
             ctx.moveTo(startX, chartOriginY);          // Start at bottom left
@@ -152,7 +161,7 @@ module.exports = class WeatherImage {
             startY = chartOriginY - wData.precipAmt(i)  * pointsPerDegree;
             endY = chartOriginY - wData.precipAmt(i + 1)  * pointsPerDegree;
 
-            //console.log("Cover: [" + i + "] = " + " StartX: " + startX + " Precip: " + wData.precipAmt(i) + " Y1: " + (chartOriginY - startY) + " Y2: " + (chartOriginY - endY));
+            // console.log("Cover: [" + i + "] = " + " StartX: " + startX + " Precip: " + wData.precipAmt(i) + " Y1: " + (chartOriginY - startY) + " Y2: " + (chartOriginY - endY));
 
             ctx.beginPath();
             ctx.moveTo(startX, chartOriginY);          // Start at bottom left
@@ -268,24 +277,24 @@ module.exports = class WeatherImage {
 
         for (let i: number = 0; i <= horizontalGridLines; i++) {
             // i = 0, 1 ..10    labelString = "0", "10" .. "100"
-            let labelString: string = (i * (fullScaleDegrees/horizontalGridLines)).toString(); 
+            const labelString: string = (i * (fullScaleDegrees/horizontalGridLines)).toString(); 
 
-            let labelStringWdth: number = ctx.measureText(labelString).width;
-            let x: number = chartOriginX - 50;
-            let y: number = chartOriginY + 10 - (i * horizontalGridSpacing);
+            const labelStringWdth: number = ctx.measureText(labelString).width;
+            const x: number = chartOriginX - 50;
+            const y: number = chartOriginY + 10 - (i * horizontalGridSpacing);
             ctx.fillText(labelString, x - labelStringWdth / 2, y);
         }       
 
-        let weekday = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        const weekday = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
         for (let i: number = 0; i < (hoursToShow / 24); i++) {
-            let date = new Date(Date.parse(wData.timeString(i * 24)));
-            let dayStr: string = weekday[date.getDay()];
-            let dayStrWdth: number = ctx.measureText(dayStr).width;
+            const date = new Date(Date.parse(wData.timeString(i * 24)));
+            const dayStr: string = weekday[date.getDay()];
+            const dayStrWdth: number = ctx.measureText(dayStr).width;
 
 
-            let x: number = chartOriginX + (i * 4 + 2) * verticalGridSpacing;
-            let y: number = chartOriginY + 40;
+            const x: number = chartOriginX + (i * 4 + 2) * verticalGridSpacing;
+            const y: number = chartOriginY + 40;
 
             ctx.fillText(dayStr, x - dayStrWdth / 2, y);
         }
@@ -326,7 +335,7 @@ module.exports = class WeatherImage {
 
 
         // PNG-encoded, zlib compression level 3 for faster compression but bigger files, no filtering
-        //const buf2 = canvas.toBuffer('image/png', { compressionLevel: 3, filters: canvas.PNG_FILTER_NONE })
+        // const buf2 = canvas.toBuffer('image/png', { compressionLevel: 3, filters: canvas.PNG_FILTER_NONE })
         return canvas.createPNGStream();
     }
 }

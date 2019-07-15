@@ -12,7 +12,7 @@ module.exports = class WeatherData {
     private lon: string = "";
     private rainScaleFactor = 500; // Rain at .2 in/hr will be scaled to 100 (full range)
     private weatherJson: any = null; //
-    //private urlTemplate: string = `https://forecast.weather.gov/MapClick.php?lat=${this.lat}&lon=${this.lon}&FcstType=digitalDWML`;  //Onset
+    // private urlTemplate: string = `https://forecast.weather.gov/MapClick.php?lat=${this.lat}&lon=${this.lon}&FcstType=digitalDWML`;  //Onset
     private url: string = "";
     private agent: string = "";
 
@@ -40,37 +40,39 @@ module.exports = class WeatherData {
     // for heat index, no index if weatherJson.dwml.data.parameters.temperature[1].value[i]._attributes["xsi:nil"] == "true"
     // for wind gusts, no gusts if weatherJson.dwml.data.parameters.wind-speed[1].value[i]._attributes["xsi:nil"] == "true"
 
-    timeString (index: number): number {return this.weatherJson.dwml.data["time-layout"]["start-valid-time"][index]._text};
-    temperature(index: number): number {return this.weatherJson.dwml.data.parameters.temperature[2].value[index]._text};
-    dewPoint   (index: number): number {return this.weatherJson.dwml.data.parameters.temperature[0].value[index]._text};
-    cloudCover (index: number): number {return this.weatherJson.dwml.data.parameters["cloud-amount"].value[index]._text};
-    precipProb (index: number): number {return this.weatherJson.dwml.data.parameters["probability-of-precipitation"].value[index]._text};
-    windSpeed  (index: number): number {return this.weatherJson.dwml.data.parameters["wind-speed"][0].value[index]._text};
-    precipAmt  (index: number): number {return this.weatherJson.dwml.data.parameters["hourly-qpf"].value[index]._text};
+    public timeString (index: number): number {return this.weatherJson.dwml.data["time-layout"]["start-valid-time"][index]._text};
+    public temperature(index: number): number {return this.weatherJson.dwml.data.parameters.temperature[2].value[index]._text};
+    public dewPoint   (index: number): number {return this.weatherJson.dwml.data.parameters.temperature[0].value[index]._text};
+    public cloudCover (index: number): number {return this.weatherJson.dwml.data.parameters["cloud-amount"].value[index]._text};
+    public precipProb (index: number): number {return this.weatherJson.dwml.data.parameters["probability-of-precipitation"].value[index]._text};
+    public windSpeed  (index: number): number {return this.weatherJson.dwml.data.parameters["wind-speed"][0].value[index]._text};
+    public precipAmt  (index: number): number {return this.weatherJson.dwml.data.parameters["hourly-qpf"].value[index]._text};
 
-    async updateData() {
+    public async updateData() {
         let weatherXml: string = "";
 
+        // tslint:disable-next-line:no-console
         console.log("URL: " + this.url);
 
-        let headers = {
-            'User-agent': this.agent,
-            'Access-Control-Allow-Origin': '*'
-          };
+        const headers = {
+            'Access-Control-Allow-Origin': '*',
+            'User-agent': this.agent
+        };
       
 
         await axios.get(this.url)
-            .then(function (response: any) {
+            .then((response: any) => {
                 // handle success
                 //console.log("Success: " + response.data);
                 weatherXml = response.data;
             })
-            .catch(function (error: string) {
+            .catch((error: string) => {
                 // handle error
+                // tslint:disable-next-line:no-console
                 console.log("Error: " + error);
                 weatherXml = "";
             })
-            .finally(function () {
+            .finally(() => {
                 // always executed
             });
 
@@ -82,11 +84,13 @@ module.exports = class WeatherData {
         try {
             weatherString = convert.xml2json(weatherXml, { compact: true, spaces: 4 });
         } catch (e) {
+            // tslint:disable-next-line:no-console
             console.log("XML to JSON failed: " + e);
             return false;
         }
 
         if (weatherString === "") {
+            // tslint:disable-next-line:no-console
             console.log("XML to JSON failed since weatherString is empty: ");
             return false;
         }
@@ -94,15 +98,18 @@ module.exports = class WeatherData {
         try {
             this.weatherJson = JSON.parse(weatherString);
         } catch (e) {
+            // tslint:disable-next-line:no-console
             console.log("Parse JSON failed: " + e);
             return false;
         }
 
         if (this.weatherJson === undefined) {
+            // tslint:disable-next-line:no-console
             console.log("weatherJSON is undefined");
             return false;
         }
 
+        // tslint:disable-next-line:no-console
         console.log("JSON: " + JSON.stringify(this.weatherJson, null, 4));
         
         // Fix up the rain forcast data: 
