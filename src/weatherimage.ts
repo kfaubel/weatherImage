@@ -18,7 +18,7 @@ module.exports = class WeatherImage {
         if (!result) {
             // tslint:disable-next-line:no-console
             console.log("Failed to get data, no image available.\n")
-            return;
+            return null;
         }
 
         const wData = this.weatherData;
