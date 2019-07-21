@@ -1,7 +1,11 @@
 // lib/app.ts
-import express = require('express');
-const WeatherData = require('./weatherdata');
+//import express = require('express');
+import stream = require('stream');
+import util = require('util');
+//const WeatherData = require('./weatherdata');
 const WeatherImage = require('./weatherimage');
+
+const mapQuestKey = require('../mapquestkey.json');
 
 // Create a new express application instance
 async function run() {
@@ -9,22 +13,28 @@ async function run() {
 
     const weatherConfig: any = {
         agent: "ken@faubel.org",
-        lat: "41.7476",
-        lon: "-70.6676",
+        //lat: "41.7476",
+        //lon: "-70.6676",
+        zip: "02558",
+        mapQuestKey: mapQuestKey.mapQuestKey,
         title: "Forecast for Onset, MA"
     }
 
-    const weatherImage = new WeatherImage(weatherConfig);
+    const weatherImage = new WeatherImage();
 
-    const imageStream = weatherImage.getImageStream();
+    const imageStream = await weatherImage.getImageStream(weatherConfig);
 
     // console.log("__dirname: " + __dirname);
     const fs = require('fs');
     const out = fs.createWriteStream(__dirname +'/../test.png');
 
+    const finished = util.promisify(stream.finished);
+
     imageStream.pipe(out);
     // tslint:disable-next-line:no-console
     out.on('finish', () =>  console.log('The PNG file was created.\n'));
+
+    await finished(out);
 }
 
 run();

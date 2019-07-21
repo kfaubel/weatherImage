@@ -37,5 +37,7 @@
     "tslint": "^5.18.0",
     "tslint-config-prettier": "^1.18.0"
   },
-  "files": ["build/**/*"]
+  "files": [
+    "build/**/*"
+  ]
 }

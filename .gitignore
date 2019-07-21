@@ -11,6 +11,8 @@ pids
 *.seed
 *.pid.lock
 
+mapquestkey.json
+
 # location of built js and map files
 build
 

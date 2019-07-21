@@ -13,15 +13,15 @@ module.exports = class WeatherData {
     private rainScaleFactor = 500; // Rain at .2 in/hr will be scaled to 100 (full range)
     private weatherJson: any = null; //
     // private urlTemplate: string = `https://forecast.weather.gov/MapClick.php?lat=${this.lat}&lon=${this.lon}&FcstType=digitalDWML`;  //Onset
-    private url: string = "";
-    private agent: string = "";
+    // private url: string = "";
+    // private agent: string = "";
 
-    constructor(config) {
-        this.lat = config.lat;
-        this.lon = config.lon;
-        this.agent = config.agent;
+    constructor() {
+        // this.lat = config.lat;
+        // this.lon = config.lon;
+        // this.agent = config.agent;
 
-        this.url = `https://forecast.weather.gov/MapClick.php?lat=${this.lat}&lon=${this.lon}&FcstType=digitalDWML`;
+        // this.url = `https://forecast.weather.gov/MapClick.php?lat=${this.lat}&lon=${this.lon}&FcstType=digitalDWML`;
     }
 
     // time                     "2019-07-08T17:00:00-04:00" weatherJson.dwml.data.time-layout.start-valid-time[i]._text
@@ -48,18 +48,50 @@ module.exports = class WeatherData {
     public windSpeed  (index: number): number {return this.weatherJson.dwml.data.parameters["wind-speed"][0].value[index]._text};
     public precipAmt  (index: number): number {return this.weatherJson.dwml.data.parameters["hourly-qpf"].value[index]._text};
 
-    public async updateData() {
+    public async getWeatherData(config) {
         let weatherXml: string = "";
+        if (config.zip !== undefined  && config.mapQuestKey !== undefined) {
+            const mapQuestUrl = `http://www.mapquestapi.com/geocoding/v1/address?key=${config.mapQuestKey}&location=${config.zip}`
+
+            await axios.get(mapQuestUrl)
+            .then((response: any) => {
+                // handle success
+                config.lat = response.data.results[0].locations[0].latLng.lat;
+                config.lon = response.data.results[0].locations[0].latLng.lng;
+            })
+            .catch((error: string) => {
+                // handle error
+                // tslint:disable-next-line:no-console
+                console.log("Error: " + error);
+                weatherXml = "";
+            })
+            .finally(() => {
+                // always executed
+            });
+        }
+
+        if (config.lat === undefined || config.lon === undefined) {
+            console.log("No lat/lon provided.")
+            return null;
+        }
+
+        if (Number.isNaN(Number.parseFloat(config.lat)) && Number.isNaN(Number.parseFloat(config.lat))) {
+            console.log("Lat/lon are not numbers");
+            return null;
+        }
+
+        const url = `https://forecast.weather.gov/MapClick.php?lat=${config.lat}&lon=${config.lon}&FcstType=digitalDWML`;
+        
 
         // tslint:disable-next-line:no-console
-        console.log("URL: " + this.url);
+        console.log("URL: " + url);
 
         const headers = {
             'Access-Control-Allow-Origin': '*',
-            'User-agent': this.agent
+            'User-agent': config.agent
         };
 
-        await axios.get(this.url)
+        await axios.get(url)
             .then((response: any) => {
                 // handle success
                 //console.log("Success: " + response.data);

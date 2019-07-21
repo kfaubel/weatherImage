@@ -4,16 +4,16 @@ const WeatherData = require('./weatherdata');
 //export function generateImage(wData: any) {
 module.exports = class WeatherImage {
     private weatherData: any;
-    private weatherConfig: any;
+    //private weatherConfig: any;
 
-    constructor(weatherConfig) {
-        this.weatherConfig = weatherConfig;
+    constructor() {
+        //
     }
 
-    public async getImageStream() {
-        this.weatherData = new WeatherData(this.weatherConfig);
+    public async getImageStream(weatherConfig) {
+        this.weatherData = new WeatherData();
 
-        const result: string = await  this.weatherData.updateData();
+        const result: string = await  this.weatherData.getWeatherData(weatherConfig);
 
         if (!result) {
             // tslint:disable-next-line:no-console
@@ -83,8 +83,8 @@ module.exports = class WeatherImage {
         // Draw the title
         ctx.fillStyle = titleColor;
         ctx.font = largeFont;
-        const textWidth: number = ctx.measureText(this.weatherConfig.title).width;
-        ctx.fillText(this.weatherConfig.title, (imageWidth - textWidth) / 2, 60);
+        const textWidth: number = ctx.measureText(weatherConfig.title).width;
+        ctx.fillText(weatherConfig.title, (imageWidth - textWidth) / 2, 60);
 
         // Draw the color key labels        
         ctx.font = smallFont;
