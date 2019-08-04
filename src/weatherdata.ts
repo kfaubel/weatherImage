@@ -10,7 +10,7 @@ const axios = require('axios');
 module.exports = class WeatherData {
     private lat: string = "";
     private lon: string = "";
-    private rainScaleFactor = 500; // Rain at .2 in/hr will be scaled to 100 (full range)
+    private rainScaleFactor = 1000; // Rain at .2 in/hr will be scaled to 100 (full range)
     private weatherJson: any = null; //
     // private urlTemplate: string = `https://forecast.weather.gov/MapClick.php?lat=${this.lat}&lon=${this.lon}&FcstType=digitalDWML`;  //Onset
     // private url: string = "";

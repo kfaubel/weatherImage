@@ -106,17 +106,20 @@ module.exports = class WeatherImage {
         // We need to skip past the time that has past today.  Start at current hour.
         const firstHour: number = new Date().getHours(); // 0-23
 
+        //
         // Draw the cloud cover in the background (filled)
+        //
         ctx.fillStyle = 'rgb(50, 50, 50)';
 
         // if there are 120 hours to show, and first hour is 0
         // we want to access wData in the range 0-119
         // since each iteration uses i and i+1, we want to loop from 0-118
         //
-        // if we start 10 hours into the day, we will loop from 10-118
-        for (let i: number = firstHour; i < (hoursToShow - 1); i++) {
-            startX = chartOriginX + i * pointsPerHour;
-            endX   = chartOriginX + (i + 1) * pointsPerHour;
+        // if we start 10 hours into the day, we will loop from 0-109
+        // We do start plotting the data firstHour * pointsPerHour after the y axis
+        for (let i: number = 0; i < (hoursToShow - firstHour - 1); i++) {
+            startX = chartOriginX + (i + firstHour) * pointsPerHour;
+            endX   = chartOriginX + (i + firstHour + 1) * pointsPerHour;
             startY = chartOriginY - wData.cloudCover(i) * pointsPerDegree;
             endY   = chartOriginY - wData.cloudCover(i + 1) * pointsPerDegree;
 
@@ -144,20 +147,20 @@ module.exports = class WeatherImage {
         ctx.lineTo(startX, chartOriginY);          // back to the bottom left
         ctx.fill();
 
-
-
-
+        //
         // Draw the rain amount in the background over the clouds (filled)
+        //
         ctx.fillStyle = 'rgb(40, 120, 140)';  // A little more blue
 
         // if there are 120 hours to show, and first hour is 0
         // we want to access wData in the range 0-119
         // since each iteration uses i and i+1, we want to loop from 0-118
         //
-        // if we start 10 hours into the day, we will loop from 10-119
-        for (let i: number = firstHour; i <= (hoursToShow - 1); i++) {
-            startX = chartOriginX + i * pointsPerHour;
-            endX = chartOriginX + (i + 1) * pointsPerHour;
+        // if we start 10 hours into the day, we will loop from 0-109
+        // We do start plotting the data firstHour * pointsPerHour after the y axis
+        for (let i: number = 0; i < (hoursToShow - firstHour - 1); i++) {
+            startX = chartOriginX + (i + firstHour) * pointsPerHour;
+            endX   = chartOriginX + (i + firstHour + 1) * pointsPerHour;
             startY = chartOriginY - wData.precipAmt(i)  * pointsPerDegree;
             endY = chartOriginY - wData.precipAmt(i + 1)  * pointsPerDegree;
 
@@ -324,7 +327,7 @@ module.exports = class WeatherImage {
         // Deaw the wind speed line
         ctx.strokeStyle = windSpeedColor;
         ctx.beginPath();
-        ctx.moveTo(chartOriginX + pointsPerHour * firstHour, chartOriginY - (wData.windSpeed(firstHour) * chartHeight) / fullScaleDegrees);
+        ctx.moveTo(chartOriginX + pointsPerHour * firstHour, chartOriginY - (wData.windSpeed(0) * chartHeight) / fullScaleDegrees);
         for (let i: number =  0; i <= (hoursToShow - firstHour - 1); i++) {
             ctx.lineTo(chartOriginX + pointsPerHour * (i + firstHour), chartOriginY - (wData.windSpeed(i) * chartHeight) / fullScaleDegrees);
         }
