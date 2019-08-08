@@ -82,7 +82,7 @@ module.exports = class WeatherData {
         
 
         // tslint:disable-next-line:no-console
-        console.log("URL: " + url);
+        //console.log("URL: " + url);
 
         const headers = {
             'Access-Control-Allow-Origin': '*',
@@ -100,9 +100,6 @@ module.exports = class WeatherData {
                 // tslint:disable-next-line:no-console
                 console.log("Error: " + error);
                 weatherXml = "";
-            })
-            .finally(() => {
-                // always executed
             });
 
         if (weatherXml === "") {
