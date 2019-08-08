@@ -52,6 +52,7 @@ module.exports = class WeatherData {
         let weatherXml: string = "";
         if (config.zip !== undefined  && config.mapQuestKey !== undefined) {
             const mapQuestUrl = `http://www.mapquestapi.com/geocoding/v1/address?key=${config.mapQuestKey}&location=${config.zip}`
+            console.log("Mapquest URL: " + mapQuestUrl);
 
             await axios.get(mapQuestUrl)
             .then((response: any) => {
@@ -64,9 +65,6 @@ module.exports = class WeatherData {
                 // tslint:disable-next-line:no-console
                 console.log("Error: " + error);
                 weatherXml = "";
-            })
-            .finally(() => {
-                // always executed
             });
         }
 
