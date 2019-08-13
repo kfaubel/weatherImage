@@ -13,16 +13,18 @@ async function run() {
 
     const weatherConfig: any = {
         agent: "ken@faubel.org",
-        //lat: "41.7476",
-        //lon: "-70.6676",
-        zip: "01827",
-        mapQuestKey: mapQuestKey.mapQuestKey,
+        lat: "41.7476",
+        lon: "-70.6676",
+        //zip: "01827",
+        //mapQuestKey: mapQuestKey.mapQuestKey,
         title: "Forecast for Onset, MA"
     }
 
     const weatherImage = new WeatherImage();
 
-    const imageStream = await weatherImage.getImageStream(weatherConfig);
+    const result = await weatherImage.getImageStream(weatherConfig);
+    const imageStream = result.stream;
+    console.log("Expires: " + result.expires);
 
     // console.log("__dirname: " + __dirname);
     const fs = require('fs');

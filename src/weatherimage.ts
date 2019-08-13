@@ -334,11 +334,14 @@ module.exports = class WeatherImage {
         ctx.lineTo(chartOriginX + pointsPerHour * hoursToShow, chartOriginY - (wData.windSpeed(hoursToShow - firstHour) * chartHeight) / fullScaleDegrees);
         ctx.stroke();
 
-
-
+        let expires = new Date();
+        expires.setHours(expires.getHours() + 2);
 
         // PNG-encoded, zlib compression level 3 for faster compression but bigger files, no filtering
         // const buf2 = canvas.toBuffer('image/png', { compressionLevel: 3, filters: canvas.PNG_FILTER_NONE })
-        return canvas.createPNGStream();
+        return {
+            stream: canvas.createPNGStream(),
+            expires: expires.toUTCString()
+        }
     }
 }
