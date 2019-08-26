@@ -1,5 +1,6 @@
 const { createCanvas, loadImage } = require('canvas');
 const WeatherData = require('./weatherdata');
+const SunCalc = require ('suncalc');
 
 //export function generateImage(wData: any) {
 module.exports = class WeatherImage {
@@ -20,6 +21,15 @@ module.exports = class WeatherImage {
             console.log("Failed to get data, no image available.\n")
             return null;
         }
+
+        // https://www.npmjs.com/package/suncalc
+        const sunTimes = SunCalc.getTimes(new Date(), weatherConfig.lat, weatherConfig.lon);
+        console.log("Sunrise: " + sunTimes.sunrise + "  Sunset: " + sunTimes.sunset);
+        console.log("Times: " + JSON.stringify(sunTimes, null, 4));
+
+        const moonTimes = SunCalc.getMoonTimes(new Date(), weatherConfig.lat, weatherConfig.lon);
+        console.log("Moonrise: " + moonTimes.rise + "  Moonset: " + moonTimes.set);
+        console.log("Always up: " + moonTimes.alwaysUp + " Always down: " + moonTimes.alwaysDown);
 
         const wData = this.weatherData;
         const imageHeight: number = 1080; // 800;

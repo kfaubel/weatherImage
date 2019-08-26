@@ -13,10 +13,10 @@ async function run() {
 
     const weatherConfig: any = {
         agent: "ken@faubel.org",
-        //lat: "41.7476",
-        //lon: "-70.6676",
-        zip: "01827",
-        mapQuestKey: mapQuestKey.mapQuestKey,
+        lat: "41.7476",
+        lon: "-70.6676",
+        //zip: "01827",
+        //mapQuestKey: mapQuestKey.mapQuestKey,
         title: "Forecast for Onset, MA"
     }
 
