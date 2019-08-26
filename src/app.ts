@@ -22,7 +22,9 @@ async function run() {
 
     const weatherImage = new WeatherImage();
 
-    const imageStream = await weatherImage.getImageStream(weatherConfig);
+    const result = await weatherImage.getImageStream(weatherConfig);
+    const imageStream = result.stream;
+    console.log("Expires: " + result.expires);
 
     // console.log("__dirname: " + __dirname);
     const fs = require('fs');
