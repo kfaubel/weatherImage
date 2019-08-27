@@ -2,16 +2,20 @@
   "name": "weatherimage",
   "version": "1.0.0",
   "description": "Gets an image based on NWS weather data",
-  "main": "index.js",
+  "mainZZZ": "index.js",
+  "private": true,
   "scripts": {
     "tsc": "tsc",
-    "build": "npm run tsc",
+    "buildX": "npm run tsc",
     "start": "ts-node src/app.ts",
-    "dev": "ts-node-dev --respawn --transpileOnly ./src/app.ts",
+    "devX": "ts-node-dev --respawn --transpileOnly ./src/app.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
     "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
     "prepare": "npm run build",
-    "lint": "tslint -p tsconfig.json"
+    "lint": "tslint -p tsconfig.json",
+    "webpack": "webpack",
+    "dev":   "npm run tsc && webpack --mode development ./src/index.js --output ./dist/main.js",
+    "build": "npm run tsc && webpack --mode production ./src/index.js --output ./dist/main.js"    
   },
   "repository": {
     "type": "git",
@@ -36,7 +40,9 @@
   "devDependencies": {
     "prettier": "^1.18.2",
     "tslint": "^5.18.0",
-    "tslint-config-prettier": "^1.18.0"
+    "tslint-config-prettier": "^1.18.0",
+    "webpack": "^4.39.3",
+    "webpack-cli": "^3.3.7"
   },
   "files": [
     "build/**/*"
