@@ -38,15 +38,23 @@ module.exports = class WeatherImage {
         const  chartHeight = 900; // 600;
 
         const  daysToShow = 5;                                        // for 5 days
+        
+        const  showHourGridLines = daysToShow <= 2 ? true : false;    // Only show if we are showing 2 days or less, otherwise its too crowded
+
         const  hoursToShow = daysToShow * 24;                         //   120
-        const  verticalGridLines = daysToShow * 4;                    //   20     every 6 hours  (0-20 for 21 total vertical lines)
-        const  verticalMajorGridInterval = 4;                         //   4       every 4th vertical lins is a day 
-        const  verticalGridSpacing = chartWidth / verticalGridLines;  // horizontal spacing between the vertical lines. 1080 pixels split into 20 chunks
+
+        const  verticalFineGridLines = daysToShow * 24                //   120        every 1 hours  (0-20 for 21 total vertical lines)
+        const  verticalGridLines = daysToShow * 4;                    //   20        every 6 hours  (0-20 for 21 total vertical lines)
+        const  verticalMajorGridLines = daysToShow;                         //   4         every 4th vertical lines is a day 
+
+        const  verticalFineGridSpacing = chartWidth / verticalFineGridLines; // horizontal spacing between the vertical lines. 1080 pixels split into 20 chunks
+        const  verticalGridSpacing = chartWidth / verticalGridLines;         // horizontal spacing between the vertical lines. 1080 pixels split into 20 chunks
+        const  verticalMajorGridSpacing = chartWidth / verticalMajorGridLines;   // horizontal spacing between the vertical lines. 1080 pixels split into 20 chunks
+
         const  pointsPerHour = chartWidth / hoursToShow;
 
         const  fullScaleDegrees = 100;
         const  horizontalGridLines = fullScaleDegrees/10;             // The full scale is devided into a grid of 10. Each represents 10 degrees, percent or miles per hour
-        // const  horizontalMajorGridInterval = 100                      // draw lines at 0 and 100
         const  horizontalGridSpacing = chartHeight / horizontalGridLines;  // vertical spacing between the horizontal lines. 900 pixels split into 10 chunks
         const  pointsPerDegree = chartHeight/100;
 
@@ -60,6 +68,7 @@ module.exports = class WeatherImage {
         const mediumFont: string = 'bold 36px sans-serif';   // axis labels
         const smallFont: string  = '24px sans-serif';   // Legend at the top
 
+        const thinStroke: number = 1;
         const regularStroke: number = 3;
         const heavyStroke: number = 6;
 
@@ -197,7 +206,24 @@ module.exports = class WeatherImage {
 
         // Draw the grid lines
 
-        // Draw the vertical lines
+        // Draw the thin hour vertical lines
+        if (showHourGridLines) {
+            ctx.strokeStyle = gridLinesColor;
+            ctx.lineWidth = thinStroke;
+            for (let i: number = 0; i <= verticalFineGridLines; i++) {
+                startX = chartOriginX + (i * verticalFineGridSpacing);
+                endX = chartOriginX + (i * verticalFineGridSpacing);
+                startY = chartOriginY;
+                endY = chartOriginY - (chartHeight);
+
+                ctx.beginPath();
+                ctx.moveTo(startX, startY);
+                ctx.lineTo(endX, endY);
+                ctx.stroke();
+            }
+        }
+
+        // Draw the regular vertical lines
         ctx.strokeStyle = gridLinesColor;
         ctx.lineWidth = regularStroke;
         for (let i: number = 0; i <= verticalGridLines; i++) {
@@ -215,9 +241,9 @@ module.exports = class WeatherImage {
         // Draw the major vertical lines
         ctx.strokeStyle = majorGridLinesColor;
         ctx.lineWidth = heavyStroke;
-        for (let i: number = 0; i <= verticalGridLines; i += verticalMajorGridInterval) {
-            startX = chartOriginX + (i * verticalGridSpacing);
-            endX = chartOriginX + (i * verticalGridSpacing);
+        for (let i: number = 0; i <= verticalGridLines; i ++) {
+            startX = chartOriginX + (i * verticalMajorGridSpacing);
+            endX = chartOriginX + (i * verticalMajorGridSpacing);
             startY = chartOriginY;
             endY = chartOriginY - (chartHeight);
 

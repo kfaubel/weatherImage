@@ -11,15 +11,22 @@ const mapQuestKey = require('../mapquestkey.json');
 async function run() {
     // const app: express.Application = express();
 
+    // const weatherConfig: any = {
+    //     agent: "ken@faubel.org",
+    //     lat: "41.7476",
+    //     lon: "-70.6676",
+    //     //zip: "01827",
+    //     //mapQuestKey: mapQuestKey.mapQuestKey,
+    //     title: "Forecast for Onset, MA"
+    // }
+    
     const weatherConfig: any = {
         agent: "ken@faubel.org",
-        lat: "41.7476",
-        lon: "-70.6676",
-        //zip: "01827",
-        //mapQuestKey: mapQuestKey.mapQuestKey,
-        title: "Forecast for Onset, MA"
+        lat: "42.96",
+        lon: "-77.44",
+        title: "Forecast for Victor, NY"
     }
-
+   
     const weatherImage = new WeatherImage();
 
     const result = await weatherImage.getImageStream(weatherConfig);
