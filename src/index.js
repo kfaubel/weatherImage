@@ -1,3 +1,6 @@
-const WeatherImage = require('../build/weatherimage');
+// This is used when embedding this in a larger solution
+// Use app.ts for local testing and to build a stand alone solution
 
-console.log("Hello, Webpack")
+const WeatherImage = require('./build/weatherimage');
+
+module.exports = WeatherImage;

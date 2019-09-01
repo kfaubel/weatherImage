@@ -2,7 +2,7 @@
 //import express = require('express');
 import stream = require('stream');
 import util = require('util');
-//const WeatherData = require('./weatherdata');
+const logger = require("./logger");
 const WeatherImage = require('./weatherimage');
 
 const mapQuestKey = require('../mapquestkey.json');
@@ -19,6 +19,8 @@ async function run() {
     //     //mapQuestKey: mapQuestKey.mapQuestKey,
     //     title: "Forecast for Onset, MA"
     // }
+
+    // https://forecast.weather.gov/MapClick.php?lat=42.96&lon=-77.44&FcstType=digitalDWML
     
     const weatherConfig: any = {
         agent: "ken@faubel.org",
@@ -27,11 +29,11 @@ async function run() {
         title: "Forecast for Victor, NY"
     }
    
-    const weatherImage = new WeatherImage();
+    const weatherImage = new WeatherImage(logger);
 
     const result = await weatherImage.getImageStream(weatherConfig);
     const imageStream = result.stream;
-    console.log("Expires: " + result.expires);
+    logger.info("Expires: " + result.expires);
 
     // console.log("__dirname: " + __dirname);
     const fs = require('fs');
@@ -41,7 +43,7 @@ async function run() {
 
     imageStream.pipe(out);
     // tslint:disable-next-line:no-console
-    out.on('finish', () =>  console.log('The PNG file was created.\n'));
+    out.on('finish', () =>  logger.info('The PNG file was created.\n'));
 
     await finished(out);
 }

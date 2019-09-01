@@ -7,18 +7,26 @@ module.exports = class WeatherImage {
     private weatherData: any;
     //private weatherConfig: any;
 
-    constructor() {
-        //
+    private logger;
+
+    constructor(logger: any) {
+        this.logger = logger;
     }
 
-    public async getImageStream(weatherConfig) {
+    public setLogger(logger: any) {
+        this.logger = logger;
+    }
+
+    public async getImageStream(weatherConfig: any) {
+        this.logger.info("getImageStream: starting");
+        
         this.weatherData = new WeatherData();
 
         const result: string = await  this.weatherData.getWeatherData(weatherConfig);
 
         if (!result) {
             // tslint:disable-next-line:no-console
-            console.log("Failed to get data, no image available.\n")
+            this.logger.warn("Failed to get data, no image available.\n")
             return null;
         }
         
@@ -37,7 +45,7 @@ module.exports = class WeatherImage {
         const  chartWidth = 1680; // 1080;
         const  chartHeight = 900; // 600;
 
-        const  daysToShow = 5;                                        // for 5 days
+        const  daysToShow = 2;                                        // for 5 days
         
         const  showHourGridLines = daysToShow <= 2 ? true : false;    // Only show if we are showing 2 days or less, otherwise its too crowded
 
@@ -121,6 +129,7 @@ module.exports = class WeatherImage {
 
         // We need to skip past the time that has past today.  Start at current hour.
         const firstHour: number = new Date().getHours(); // 0-23
+        this.logger.info("First Hour: " + firstHour);
 
         //
         // Draw the cloud cover in the background (filled)
@@ -180,7 +189,7 @@ module.exports = class WeatherImage {
             startY = chartOriginY - wData.precipAmt(i)  * pointsPerDegree;
             endY = chartOriginY - wData.precipAmt(i + 1)  * pointsPerDegree;
 
-            // console.log("Cover: [" + i + "] = " + " StartX: " + startX + " Precip: " + wData.precipAmt(i) + " Y1: " + (chartOriginY - startY) + " Y2: " + (chartOriginY - endY));
+            // this.logger.info("Cover: [" + i + "] = " + " StartX: " + startX + " Precip: " + wData.precipAmt(i) + " Y1: " + (chartOriginY - startY) + " Y2: " + (chartOriginY - endY));
 
             ctx.beginPath();
             ctx.moveTo(startX, chartOriginY);          // Start at bottom left

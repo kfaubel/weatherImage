@@ -6,16 +6,16 @@
   "private": true,
   "scripts": {
     "tsc": "tsc",
-    "buildX": "npm run tsc",
+    "build": "npm run tsc",
     "start": "ts-node src/app.ts",
-    "devX": "ts-node-dev --respawn --transpileOnly ./src/app.ts",
+    "dev": "ts-node-dev --respawn --transpileOnly ./src/app.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
     "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
     "prepare": "npm run build",
     "lint": "tslint -p tsconfig.json",
     "webpack": "webpack",
-    "dev":   "npm run tsc && webpack --mode development ./src/index.js --output ./dist/main.js",
-    "build": "npm run tsc && webpack --mode production ./src/index.js --output ./dist/main.js"    
+    "devxxx": "npm run tsc && webpack --mode development ./build/weatherimage.js --output ./dist/main.js",
+    "buildxxx": "npm run tsc && webpack --mode production ./build/weatherimage.js --output ./dist/main.js"
   },
   "repository": {
     "type": "git",
@@ -35,6 +35,7 @@
     "suncalc": "^1.8.0",
     "ts-node-dev": "^1.0.0-pre.40",
     "typescript": "^3.5.2",
+    "winston": "^3.2.1",
     "xml-js": "^1.6.11"
   },
   "devDependencies": {
