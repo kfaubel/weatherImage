@@ -2,8 +2,7 @@
   "name": "weatherimage",
   "version": "1.0.0",
   "description": "Gets an image based on NWS weather data",
-  "mainZZZ": "index.js",
-  "private": true,
+  "main": "index.js",
   "scripts": {
     "tsc": "tsc",
     "build": "npm run tsc",
