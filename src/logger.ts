@@ -10,7 +10,7 @@ const logFormat = printf(({ level, message, label, timestamp }) => {
 
 const logger = createLogger({
     format: combine(
-        label({ label: 'app.js' }),
+        label({ label: 'WeatherImageTest' }),
         format.colorize(),
         format.simple(),
         format.timestamp(),
@@ -18,11 +18,13 @@ const logger = createLogger({
     ),
     transports: [
         new transports.Console({timestamp: true}),
-        new transports.File({ filename: 'PhotoData.log', timestamp: true })
+        new transports.File({ filename: 'WeatherImageTest.log', timestamp: true })
     ]
 });
 
 logger.level = 'info';
+logger.setLevel = (level) => {logger.level = level};
+
 logger.exitOnError = false;
 
 module.exports=logger;
