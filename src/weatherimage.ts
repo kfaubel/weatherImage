@@ -17,7 +17,7 @@ module.exports = class WeatherImage {
     public async getImageStream(weatherConfig: any) {
         this.logger.info("getImageStream: starting");
         
-        this.weatherData = new WeatherData();
+        this.weatherData = new WeatherData(this.logger);
 
         const result: string = await  this.weatherData.getWeatherData(weatherConfig);
 

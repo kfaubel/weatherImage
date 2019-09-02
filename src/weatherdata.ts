@@ -16,13 +16,11 @@ module.exports = class WeatherData {
     // private url: string = "";
     // private agent: string = "";
 
-    constructor() {
-        // this.lat = config.lat;
-        // this.lon = config.lon;
-        // this.agent = config.agent;
+    private logger;
 
-        // this.url = `https://forecast.weather.gov/MapClick.php?lat=${this.lat}&lon=${this.lon}&FcstType=digitalDWML`;
-    }
+    constructor(logger: any) {
+        this.logger = logger;
+    }    
 
     // time                     "2019-07-08T17:00:00-04:00" weatherJson.dwml.data.time-layout.start-valid-time[i]._text
     // hourly temp              "72"                        weatherJson.dwml.data.parameters.temperature[2].value[i]._text
@@ -49,10 +47,11 @@ module.exports = class WeatherData {
     public precipAmt  (index: number): number {return this.weatherJson.dwml.data.parameters["hourly-qpf"].value[index]._text};
 
     public async getWeatherData(config) {
+        this.logger.info("Getting lat=" + config.lat + ", lon=" + config.lon + ", Title: " + config.title)
         let weatherXml: string = "";
         if (config.zip !== undefined  && config.mapQuestKey !== undefined) {
             const mapQuestUrl = `http://www.mapquestapi.com/geocoding/v1/address?key=${config.mapQuestKey}&location=${config.zip}`
-            console.log("Mapquest URL: " + mapQuestUrl);
+            this.logger.info("Mapquest URL: " + mapQuestUrl);
 
             await axios.get(mapQuestUrl)
             .then((response: any) => {
@@ -63,18 +62,18 @@ module.exports = class WeatherData {
             .catch((error: string) => {
                 // handle error
                 // tslint:disable-next-line:no-console
-                console.log("Error: " + error);
+                this.logger.error("Error: " + error);
                 weatherXml = "";
             });
         }
 
         if (config.lat === undefined || config.lon === undefined) {
-            console.log("No lat/lon provided.")
+            this.logger.error("No lat/lon provided.")
             return null;
         }
 
         if (Number.isNaN(Number.parseFloat(config.lat)) && Number.isNaN(Number.parseFloat(config.lat))) {
-            console.log("Lat/lon are not numbers");
+            this.logger.error("Lat/lon are not numbers");
             return null;
         }
 
@@ -98,7 +97,7 @@ module.exports = class WeatherData {
             .catch((error: string) => {
                 // handle error
                 // tslint:disable-next-line:no-console
-                console.log("Error: " + error);
+                this.logger.error("Error: " + error);
                 weatherXml = "";
             });
 
@@ -111,13 +110,13 @@ module.exports = class WeatherData {
             weatherString = convert.xml2json(weatherXml, { compact: true, spaces: 4 });
         } catch (e) {
             // tslint:disable-next-line:no-console
-            console.log("XML to JSON failed: " + e);
+            this.logger.error("XML to JSON failed: " + e);
             return false;
         }
 
         if (weatherString === "") {
             // tslint:disable-next-line:no-console
-            console.log("XML to JSON failed since weatherString is empty: ");
+            this.logger.error("XML to JSON failed since weatherString is empty: ");
             return false;
         }
 
@@ -125,13 +124,13 @@ module.exports = class WeatherData {
             this.weatherJson = JSON.parse(weatherString);
         } catch (e) {
             // tslint:disable-next-line:no-console
-            console.log("Parse JSON failed: " + e);
+            this.logger.error("Parse JSON failed: " + e);
             return false;
         }
 
         if (this.weatherJson === undefined) {
             // tslint:disable-next-line:no-console
-            console.log("weatherJSON is undefined");
+            this.logger.error("weatherJSON is undefined");
             return false;
         }
 
