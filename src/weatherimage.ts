@@ -1,11 +1,8 @@
 const { createCanvas, loadImage } = require('canvas');
 const WeatherData = require('./weatherdata');
-const SunCalc = require ('suncalc');                    // https://www.npmjs.com/package/suncalc
 
-//export function generateImage(wData: any) {
 module.exports = class WeatherImage {
     private weatherData: any;
-    //private weatherConfig: any;
 
     private logger;
 
@@ -45,7 +42,7 @@ module.exports = class WeatherImage {
         const  chartWidth = 1680; // 1080;
         const  chartHeight = 900; // 600;
 
-        const  daysToShow = 2;                                        // for 5 days
+        const  daysToShow = weatherConfig.days;                       // for 5 days (valid is 1..6)
         
         const  showHourGridLines = daysToShow <= 2 ? true : false;    // Only show if we are showing 2 days or less, otherwise its too crowded
 
@@ -375,137 +372,6 @@ module.exports = class WeatherImage {
         }
         ctx.lineTo(chartOriginX + pointsPerHour * hoursToShow, chartOriginY - (wData.windSpeed(hoursToShow - firstHour) * chartHeight) / fullScaleDegrees);
         ctx.stroke();
-
-        // Draw the sun line
-        ctx.strokeStyle = 'grey';
-        ctx.lineWidth = regularStroke;
-        startX = sunOriginX;
-        endX   = sunOriginX + chartWidth;
-        startY = sunOriginY;
-        endY   = sunOriginY;
-
-        ctx.beginPath();
-        ctx.moveTo(startX, startY);
-        ctx.lineTo(endX, endY);
-        //ctx.stroke();
-
-        for (let i: number = 0; i < (hoursToShow / 24); i++) {
-            const date = new Date(Date.parse(wData.timeString(i * 24)));
-
-            const sunTimes = SunCalc.getTimes(date, weatherConfig.lat, weatherConfig.lon);
-
-            const riseHours = (sunTimes.sunrise.getHours() * 60 + sunTimes.sunrise.getMinutes()) / (60);
-            const setHours  = (sunTimes.sunset.getHours()  * 60 + sunTimes.sunset.getMinutes())  / (60);
-
-            ctx.strokeStyle = 'yellow';
-            ctx.lineWidth = regularStroke;
-            startX = sunOriginX + (i * pointsPerHour * 24) + (riseHours * pointsPerHour);
-            endX   = sunOriginX + (i * pointsPerHour * 24) + (setHours * pointsPerHour);
-            startY = sunOriginY;
-            endY   = sunOriginY;
-
-            ctx.beginPath();
-            ctx.moveTo(startX, startY);
-            ctx.lineTo(endX, endY);
-            ctx.stroke();
-        }
-
-        // Draw the moon line
-        ctx.strokeStyle = 'grey';
-        ctx.lineWidth = regularStroke;
-        startX = moonOriginX;
-        endX   = moonOriginX + chartWidth;
-        startY = moonOriginY;
-        endY   = moonOriginY;
-
-        ctx.beginPath();
-        ctx.moveTo(startX, startY);
-        ctx.lineTo(endX, endY);
-        //ctx.stroke();
-
-        // for (let i: number = 0; i < 30; i++) {
-        //     const today = new Date();
-        //     let next = new Date();
-        //     next.setDate(today.getDate() + i);
-
-        //     const moonTimes = SunCalc.getMoonTimes(next, weatherConfig.lat, weatherConfig.lon);
-        //     console.log(JSON.stringify(moonTimes, null, 4));
-        //     if (moonTimes.rise !== undefined) {
-        //         console.log("rise: " + moonTimes.rise);
-        //     }
-        //     if (moonTimes.set !== undefined) {
-        //         console.log("set: " + moonTimes.set);
-        //     }
-        //     console.log("=================================================================" + i);
-
-        // }
-
-        for (let i: number = 0; i < (hoursToShow / 24); i++) {
-            const date = new Date(Date.parse(wData.timeString(i * 24)));
-
-            const moonTimes = SunCalc.getMoonTimes(date, weatherConfig.lat, weatherConfig.lon);
-            
-            // if (moonTimes.rise !== undefined) {
-            //     console.log("rise: " + moonTimes.rise);
-            // }
-            // if (moonTimes.set !== undefined) {
-            //     console.log("set: " + moonTimes.set);
-            // }
-            // console.log("=================================================================" + i);
-
-            let riseHours = 0;
-            let setHours = 24;
-            if (moonTimes.rise !== undefined) {
-                riseHours = (moonTimes.rise.getHours() * 60 + moonTimes.rise.getMinutes()) / (60);
-            }
-            
-            if (moonTimes.set !== undefined) {
-                setHours  = (moonTimes.set.getHours()  * 60 + moonTimes.set.getMinutes())  / (60);
-            }
-
-            ctx.strokeStyle = 'white';
-            ctx.lineWidth = regularStroke;
-
-            if (moonTimes.rise !== undefined && moonTimes.set !== undefined  && riseHours < setHours) {
-                // Draw the line from rise to set                
-                startX = moonOriginX + (i * pointsPerHour * 24) + (riseHours * pointsPerHour);
-                endX   = moonOriginX + (i * pointsPerHour * 24) + (setHours * pointsPerHour);
-                startY = moonOriginY;
-                endY   = moonOriginY;
-
-                ctx.beginPath();
-                ctx.moveTo(startX, startY);
-                ctx.lineTo(endX, endY);
-                ctx.stroke();
-            } else {
-                if (moonTimes.rise !== undefined) {
-                    // Draw a line from rise time to end of day
-                    startX = moonOriginX + (i * pointsPerHour * 24) + (riseHours * pointsPerHour);
-                    endX   = moonOriginX + (i * pointsPerHour * 24) + (24.0 * pointsPerHour);
-                    startY = moonOriginY;
-                    endY   = moonOriginY;
-
-                    ctx.beginPath();
-                    ctx.moveTo(startX, startY);
-                    ctx.lineTo(endX, endY);
-                    ctx.stroke();
-                }
-                
-                if (moonTimes.set !== undefined) {
-                    // Draw a line form the start of day to the set time
-                    startX = moonOriginX + (i * pointsPerHour * 24) + (0.0 * pointsPerHour);
-                    endX   = moonOriginX + (i * pointsPerHour * 24) + (setHours * pointsPerHour);
-                    startY = moonOriginY;
-                    endY   = moonOriginY;
-
-                    ctx.beginPath();
-                    ctx.moveTo(startX, startY);
-                    ctx.lineTo(endX, endY);
-                    ctx.stroke();
-                }
-                
-            }
-        }
 
         let expires = new Date();
         expires.setHours(expires.getHours() + 2);

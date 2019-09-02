@@ -26,7 +26,8 @@ async function run() {
         agent: "ken@faubel.org",
         lat: "42.96",
         lon: "-77.44",
-        title: "Forecast for Victor, NY"
+        title: "Forecast for Victor, NY",
+        days: 4
     }
    
     const weatherImage = new WeatherImage(logger);
