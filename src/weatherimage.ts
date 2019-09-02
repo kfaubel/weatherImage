@@ -33,7 +33,7 @@ module.exports = class WeatherImage {
 
         // Screen origin is the upper left corner
         const  chartOriginX = 100;                    // In from the left edge
-        const  chartOriginY = imageHeight - 50;       // Down from the top (Was: Up from the bottom edge)
+        const  chartOriginY = imageHeight - 70;       // Down from the top (Was: Up from the bottom edge)
 
         const topLegendLeftIndent = imageWidth - 300;
 
