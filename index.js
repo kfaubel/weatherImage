@@ -3,4 +3,6 @@
 
 const WeatherImage = require('./build/weatherimage');
 
+console.log("index.js here");
+
 module.exports = WeatherImage;
