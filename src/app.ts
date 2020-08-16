@@ -21,12 +21,13 @@ async function run() {
     // }
 
     // https://forecast.weather.gov/MapClick.php?lat=42.96&lon=-77.44&FcstType=digitalDWML
+    // https://forecast.weather.gov/MapClick.php?lat=41.75&lon=-70.644&FcstType=digitalDWML
     
     const weatherConfig: any = {
         agent: "ken@faubel.org",
-        lat: "42.96",
-        lon: "-77.44",
-        title: "Forecast for Victor, NY",
+        lat: "41.75",
+        lon: "-70.644",
+        title: "Forecast for Onset, MA",
         days: 4
     }
    

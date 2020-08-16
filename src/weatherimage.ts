@@ -169,10 +169,40 @@ module.exports = class WeatherImage {
         ctx.lineTo(startX, chartOriginY);          // back to the bottom left
         ctx.fill();
 
+        
+
+        //
+        // Draw the probablility of precipitaiton at the bottom.  The rain amount will cover part of this up.
+        //
+        ctx.fillStyle = 'rgb(40, 60, 100)';  // A little more blue
+
+        // if there are 120 hours to show, and first hour is 0
+        // we want to access wData in the range 0-119
+        // since each iteration uses i and i+1, we want to loop from 0-118
+        //
+        // if we start 10 hours into the day, we will loop from 0-109
+        // We do start plotting the data firstHour * pointsPerHour after the y axis
+        for (let i: number = 0; i < (hoursToShow - firstHour - 1); i++) {
+            startX = chartOriginX + (i + firstHour) * pointsPerHour;
+            endX   = chartOriginX + (i + firstHour + 1) * pointsPerHour;
+            startY = chartOriginY - wData.precipProb(i)  * pointsPerDegree;
+            endY = chartOriginY - wData.precipProb(i + 1)  * pointsPerDegree;
+
+            // this.logger.info("Cover: [" + i + "] = " + " StartX: " + startX + " Precip: " + wData.precipAmt(i) + " Y1: " + (chartOriginY - startY) + " Y2: " + (chartOriginY - endY));
+
+            ctx.beginPath();
+            ctx.moveTo(startX, chartOriginY);          // Start at bottom left
+            ctx.lineTo(startX, startY);     // Up to the height of startY
+            ctx.lineTo(endX, endY);         // across the top to endY       
+            ctx.lineTo(endX, chartOriginY);            // down to the bottom right
+            ctx.lineTo(startX, chartOriginY);          // back to the bottom left
+            ctx.fill();
+        }
+
         //
         // Draw the rain amount in the background over the clouds (filled)
         //
-        ctx.fillStyle = 'rgb(40, 120, 140)';  // A little more blue
+        ctx.fillStyle = 'rgb(40, 130, 150)';  // A little more blue
 
         // if there are 120 hours to show, and first hour is 0
         // we want to access wData in the range 0-119
@@ -373,7 +403,7 @@ module.exports = class WeatherImage {
         ctx.lineTo(chartOriginX + pointsPerHour * hoursToShow, chartOriginY - (wData.windSpeed(hoursToShow - firstHour) * chartHeight) / fullScaleDegrees);
         ctx.stroke();
 
-        let expires = new Date();
+        const expires = new Date();
         expires.setHours(expires.getHours() + 2);
 
         // PNG-encoded, zlib compression level 3 for faster compression but bigger files, no filtering
