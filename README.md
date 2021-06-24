@@ -2,6 +2,7 @@
 Generate a weather image for a given (US) location using NWS data.  This image is particualry useful if you have a photo frame that can take a list of URLs for the images you want to see.  
 
 I particualry like this way to visualize five days of weather in a single glance. 
+![Boston Forecast](https://i.imgur.com/r5XPftO.png)
 * The red line is the temperature.
 * The green is the dew point
 * The yellow is the wind speed (mph)
