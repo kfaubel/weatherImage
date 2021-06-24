@@ -1,7 +1,16 @@
 # WeatherImage
-Generate a weather image for a given (US) location using NWS data.  This image is particualry useful if you have a photo frame that can take a list of URLs for the images you want to see.  This may also be useful with a connector to Google Photos.  If you have a Google Hub device setup to show a photo album having some useful content like the weather would be useful.
+Generate a weather image for a given (US) location using NWS data.  This image is particualry useful if you have a photo frame that can take a list of URLs for the images you want to see.  
 
-I particualry like the way to visualize 5 days of weather in a single glance.  The daily highs and the daily lows are easy to see at a trend.  The gray background shows the clouds and the blue in the background shows precipitaiton.
+I particualry like this way to visualize five days of weather in a single glance. 
+* The red line is the temperature.
+* The green is the dew point
+* The yellow is the wind speed (mph)
+* The daily highs and the daily lows are easy to see as a trend.  
+* The orange reference line is 75F or the middle of the comfort range
+* The blue reference line is 32F for freezing 
+* The gray background shows the cloud cover
+* The dark blue in the background shows the likelyhood of precipitaiton (0-100%)
+* The light blue in the background shows the amount of rain.
 
 I also find the dew point to be a better indication of comfort than humitity.  At night as the temperature cools and approaches the dew point the relative humitity increases.  During the day the difference increases so the relative humidity actualy decreases even though it is hotter.
 
