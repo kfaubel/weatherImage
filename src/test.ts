@@ -29,19 +29,29 @@ async function run() {
         agent: "ken@faubel.org",
         lat: "41.75",
         lon: "-70.644",
-        title: "Forecast for Boston, MA",
+        title: "Forecast for Onset, MA",
         days: 4
     }
    
     const weatherImage = new WeatherImage(logger);
 
     const result = await weatherImage.getImageStream(weatherConfig);
-    logger.info("Looks promising");
     
     // We now get result.jpegImg
+    logger.info(`Writing from data: image.jpg`);
     fs.writeFileSync('image.jpg', result.jpegImg.data);
 
-    logger.info("done");
+    logger.info(`Writing from stream: image2.jpg`);
+
+    const out = fs.createWriteStream('image2.jpg');
+    const finished = util.promisify(stream.finished);
+
+    result.stream.pipe(out);
+    out.on('finish', () =>  logger.info('The jpg from a stream file was created.'));
+
+    await finished(out); 
+
+    logger.info("done"); 
 }
 
 run();

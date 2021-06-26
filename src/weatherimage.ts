@@ -4,6 +4,8 @@ const pure = require('pureimage');
 
 const WeatherData = require('./weatherdata');
 
+const fontDir = __dirname + "/../fonts";
+
 module.exports = class WeatherImage {
     private weatherData: any;
 
@@ -76,9 +78,9 @@ module.exports = class WeatherImage {
         const mediumFont: string = "36px 'OpenSans-Bold'";   // axis labels
         const smallFont: string  = "24px 'OpenSans-Bold'";   // Legend at the top
 
-        const fntBold = pure.registerFont('fonts/OpenSans-Bold.ttf','OpenSans-Bold');
-        const fntRegular = pure.registerFont('fonts/OpenSans-Regular.ttf','OpenSans-Regular');
-        const fntRegular2 = pure.registerFont('fonts/alata-regular.ttf','alata-regular');
+        const fntBold     = pure.registerFont(fontDir + '/OpenSans-Bold.ttf','OpenSans-Bold');
+        const fntRegular  = pure.registerFont(fontDir + '/OpenSans-Regular.ttf','OpenSans-Regular');
+        const fntRegular2 = pure.registerFont(fontDir + '/alata-regular.ttf','alata-regular');
 
         fntBold.loadSync();
         fntRegular.loadSync();
@@ -417,9 +419,6 @@ module.exports = class WeatherImage {
 
         const expires = new Date();
         expires.setHours(expires.getHours() + 2);
-
-        // PNG-encoded, zlib compression level 3 for faster compression but bigger files, no filtering
-        // const buf2 = canvas.toBuffer('image/png', { compressionLevel: 3, filters: canvas.PNG_FILTER_NONE })
 
         const jpegImg = await jpeg.encode(img, 50);
 
