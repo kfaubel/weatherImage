@@ -3,6 +3,8 @@
 import stream = require('stream');
 import util = require('util');
 const logger = require("./logger");
+const fs = require('fs');
+
 const WeatherImage = require('./weatherimage');
 
 const mapQuestKey = require('../mapquestkey.json');
@@ -27,35 +29,19 @@ async function run() {
         agent: "ken@faubel.org",
         lat: "41.75",
         lon: "-70.644",
-        title: "Forecast for Onset, MA",
+        title: "Forecast for Boston, MA",
         days: 4
     }
    
     const weatherImage = new WeatherImage(logger);
 
     const result = await weatherImage.getImageStream(weatherConfig);
-    const imageStream = result.stream;
-    logger.info("Expires: " + result.expires);
+    logger.info("Looks promising");
+    
+    // We now get result.jpegImg
+    fs.writeFileSync('image.jpg', result.jpegImg.data);
 
-    // console.log("__dirname: " + __dirname);
-    const fs = require('fs');
-    const out = fs.createWriteStream(__dirname +'/../test.png');
-
-    const finished = util.promisify(stream.finished);
-
-    imageStream.pipe(out);
-    // tslint:disable-next-line:no-console
-    out.on('finish', () =>  logger.info('The PNG file was created.\n'));
-
-    await finished(out);
+    logger.info("done");
 }
 
 run();
-
-// app.get('/', function (req, res) {
-//   res.send('Hello World!');
-// });
-
-// app.listen(3000, function () {
-//   console.log('Example app listening on port 3000!');
-// });

@@ -1,4 +1,7 @@
-const { createCanvas, loadImage } = require('canvas');
+import stream = require('stream');
+const jpeg = require('jpeg-js');
+const pure = require('pureimage');
+
 const WeatherData = require('./weatherdata');
 
 module.exports = class WeatherImage {
@@ -69,13 +72,21 @@ module.exports = class WeatherImage {
         const moonOriginX = 100;
         const moonOriginY = chartOriginY - chartHeight - 16;
         
-        const largeFont: string  = '48px sans-serif';   // Title
-        const mediumFont: string = 'bold 36px sans-serif';   // axis labels
-        const smallFont: string  = '24px sans-serif';   // Legend at the top
+        const largeFont: string  = "48px 'OpenSans-Bold'";   // Title
+        const mediumFont: string = "36px 'OpenSans-Bold'";   // axis labels
+        const smallFont: string  = "24px 'OpenSans-Bold'";   // Legend at the top
+
+        const fntBold = pure.registerFont('fonts/OpenSans-Bold.ttf','OpenSans-Bold');
+        const fntRegular = pure.registerFont('fonts/OpenSans-Regular.ttf','OpenSans-Regular');
+        const fntRegular2 = pure.registerFont('fonts/alata-regular.ttf','alata-regular');
+
+        fntBold.loadSync();
+        fntRegular.loadSync();
+        fntRegular2.loadSync();
 
         const thinStroke: number = 1;
         const regularStroke: number = 3;
-        const heavyStroke: number = 6;
+        const heavyStroke: number = 5;
 
         const backgroundColor: string     = 'rgb(0, 0, 30)';
         const titleColor: string          = 'white';
@@ -85,8 +96,8 @@ module.exports = class WeatherImage {
         const dewPointColor: string       = 'rgb(140, 240, 0)';
         const windSpeedColor: string      = 'yellow';
 
-        const canvas = createCanvas(imageWidth, imageHeight);
-        const ctx = canvas.getContext('2d');
+        const img = pure.make(imageWidth, imageHeight);
+        const ctx = img.getContext('2d');
 
         // Canvas reference
         // origin is upper right
@@ -172,7 +183,7 @@ module.exports = class WeatherImage {
         
 
         //
-        // Draw the probablility of precipitaiton at the bottom.  The rain amount will cover part of this up.
+        // Draw the probability of precipitation at the bottom.  The rain amount will cover part of this up.
         //
         ctx.fillStyle = 'rgb(40, 60, 100)';  // A little more blue
 
@@ -373,17 +384,18 @@ module.exports = class WeatherImage {
 
         ctx.lineWidth = heavyStroke;
 
-        // Deaw the temperature line
+        // Draw the temperature line
         ctx.strokeStyle = temperatureColor;
         ctx.beginPath();
         ctx.moveTo(chartOriginX + pointsPerHour * firstHour, chartOriginY - (wData.temperature(0) * chartHeight) / fullScaleDegrees);
+        
         for (let i: number =  0; i <= (hoursToShow - firstHour - 1); i++) {
             ctx.lineTo(chartOriginX + pointsPerHour * (i + firstHour), chartOriginY - (wData.temperature(i) * chartHeight) / fullScaleDegrees);
         }
         ctx.lineTo(chartOriginX + pointsPerHour * hoursToShow, chartOriginY - (wData.temperature(hoursToShow - firstHour) * chartHeight) / fullScaleDegrees);
         ctx.stroke();
 
-        // Deaw the dew point line
+        // Draw the dew point line
         ctx.strokeStyle = dewPointColor;
         ctx.beginPath();
         ctx.moveTo(chartOriginX + pointsPerHour * firstHour, chartOriginY - (wData.dewPoint(0) * chartHeight) / fullScaleDegrees);
@@ -393,7 +405,7 @@ module.exports = class WeatherImage {
         ctx.lineTo(chartOriginX + pointsPerHour * hoursToShow, chartOriginY - (wData.dewPoint(hoursToShow - firstHour) * chartHeight) / fullScaleDegrees);        
         ctx.stroke();
 
-        // Deaw the wind speed line
+        // Draw the wind speed line
         ctx.strokeStyle = windSpeedColor;
         ctx.beginPath();
         ctx.moveTo(chartOriginX + pointsPerHour * firstHour, chartOriginY - (wData.windSpeed(0) * chartHeight) / fullScaleDegrees);
@@ -408,8 +420,19 @@ module.exports = class WeatherImage {
 
         // PNG-encoded, zlib compression level 3 for faster compression but bigger files, no filtering
         // const buf2 = canvas.toBuffer('image/png', { compressionLevel: 3, filters: canvas.PNG_FILTER_NONE })
+
+        const jpegImg = await jpeg.encode(img, 50);
+
+        const jpegStream = new stream.Readable({
+            read() {
+                this.push(jpegImg.data);
+                this.push(null);
+            }
+        })
+        
         return {
-            stream: canvas.createPNGStream(),
+            jpegImg: jpegImg,
+            stream:  jpegStream,
             expires: expires.toUTCString()
         }
     }
