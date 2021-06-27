@@ -2,8 +2,9 @@ import stream = require('stream');
 const jpeg = require('jpeg-js');
 const pure = require('pureimage');
 
-const WeatherData = require('./weatherdata');
-
+//const WeatherData = require('./weatherdata');
+//const WeatherData = require('../src/weatherdata');
+import { WeatherData } from './weatherdata';
 const fontDir = __dirname + "/../fonts";
 
 export class WeatherImage {
@@ -19,12 +20,12 @@ export class WeatherImage {
         this.logger = logger;
     }
 
-    public async getImageStream(weatherConfig: any) {
-        this.logger.info("getImageStream: starting");
+    public async getImageStream(weatherRequest: any) {
+        this.logger.info(`WeatherImage: request for ${weatherRequest.name}`);
         
         this.weatherData = new WeatherData(this.logger);
 
-        const result: string = await  this.weatherData.getWeatherData(weatherConfig);
+        const result: string = await  this.weatherData.getWeatherData(weatherRequest);
 
         if (!result) {
             // tslint:disable-next-line:no-console
@@ -47,7 +48,7 @@ export class WeatherImage {
         const  chartWidth = 1680; // 1080;
         const  chartHeight = 900; // 600;
 
-        const  daysToShow = weatherConfig.days;                       // for 5 days (valid is 1..6)
+        const  daysToShow = weatherRequest.days;                       // for 5 days (valid is 1..6)
         
         const  showHourGridLines = daysToShow <= 2 ? true : false;    // Only show if we are showing 2 days or less, otherwise its too crowded
 
@@ -117,8 +118,8 @@ export class WeatherImage {
         // Draw the title
         ctx.fillStyle = titleColor;
         ctx.font = largeFont;
-        const textWidth: number = ctx.measureText(weatherConfig.title).width;
-        ctx.fillText(weatherConfig.title, (imageWidth - textWidth) / 2, 60);
+        const textWidth: number = ctx.measureText(weatherRequest.title).width;
+        ctx.fillText(weatherRequest.title, (imageWidth - textWidth) / 2, 60);
 
         // Draw the color key labels        
         ctx.font = smallFont;
@@ -139,7 +140,7 @@ export class WeatherImage {
 
         // We need to skip past the time that has past today.  Start at current hour.
         const firstHour: number = new Date().getHours(); // 0-23
-        this.logger.info("First Hour: " + firstHour);
+        // this.logger.info("First Hour: " + firstHour);
 
         //
         // Draw the cloud cover in the background (filled)
@@ -181,8 +182,6 @@ export class WeatherImage {
         ctx.lineTo(endX, chartOriginY);            // down to the bottom right
         ctx.lineTo(startX, chartOriginY);          // back to the bottom left
         ctx.fill();
-
-        
 
         //
         // Draw the probability of precipitation at the bottom.  The rain amount will cover part of this up.

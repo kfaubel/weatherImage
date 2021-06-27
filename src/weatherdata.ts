@@ -7,7 +7,7 @@ const axios = require('axios');
 // New data source : https://www.weather.gov/documentation/services-web-api
 // Not all data is present
 
-export = class WeatherData {
+export class WeatherData {
     private lat: string = "";
     private lon: string = "";
     private rainScaleFactor = 1000; // Rain at .2 in/hr will be scaled to 100 (full range)
@@ -47,7 +47,6 @@ export = class WeatherData {
     public precipAmt  (index: number): number {return this.weatherJson.dwml.data.parameters["hourly-qpf"].value[index]._text};
 
     public async getWeatherData(config) {
-        this.logger.info("Getting lat=" + config.lat + ", lon=" + config.lon + ", Title: " + config.title)
         let weatherXml: string = "";
         if (config.zip !== undefined  && config.mapQuestKey !== undefined) {
             const mapQuestUrl = `http://www.mapquestapi.com/geocoding/v1/address?key=${config.mapQuestKey}&location=${config.zip}`
@@ -78,11 +77,12 @@ export = class WeatherData {
         }
 
         const url = `https://forecast.weather.gov/MapClick.php?lat=${config.lat}&lon=${config.lon}&FcstType=digitalDWML`;
-        const NWS_USER_AGENT: any = process.env.NWS_USER_AGENT;
+        let NWS_USER_AGENT: any = process.env.NWS_USER_AGENT;
 
         if (NWS_USER_AGENT === undefined) {
-            this.logger.error(`WeatherData: NWS_USER_AGENT is not defined in the env, should be an email address`);
-            return null;
+            this.logger.warn(`WeatherData: NWS_USER_AGENT is not defined in the env, should be an email address`);
+        } else {
+            NWS_USER_AGENT = "test@test.com";
         }
 
         // tslint:disable-next-line:no-console
@@ -92,6 +92,8 @@ export = class WeatherData {
             'Access-Control-Allow-Origin': '*',
             'User-agent': NWS_USER_AGENT
         };
+
+        this.logger.info(`WeatherData: Getting for: ${config.name} lat=${config.lat}, lon=${config.lon}, Title: ${config.title}`)
 
         await axios.get(url)
             .then((response: any) => {
