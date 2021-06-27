@@ -7,7 +7,7 @@ const axios = require('axios');
 // New data source : https://www.weather.gov/documentation/services-web-api
 // Not all data is present
 
-module.exports = class WeatherData {
+export = class WeatherData {
     private lat: string = "";
     private lon: string = "";
     private rainScaleFactor = 1000; // Rain at .2 in/hr will be scaled to 100 (full range)
@@ -78,14 +78,19 @@ module.exports = class WeatherData {
         }
 
         const url = `https://forecast.weather.gov/MapClick.php?lat=${config.lat}&lon=${config.lon}&FcstType=digitalDWML`;
-        
+        const NWS_USER_AGENT: any = process.env.NWS_USER_AGENT;
+
+        if (NWS_USER_AGENT === undefined) {
+            this.logger.error(`WeatherData: NWS_USER_AGENT is not defined in the env, should be an email address`);
+            return null;
+        }
 
         // tslint:disable-next-line:no-console
         //console.log("URL: " + url);
 
         const headers = {
             'Access-Control-Allow-Origin': '*',
-            'User-agent': config.agent
+            'User-agent': NWS_USER_AGENT
         };
 
         await axios.get(url)

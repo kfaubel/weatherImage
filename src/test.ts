@@ -5,7 +5,7 @@ import util = require('util');
 const logger = require("./logger");
 const fs = require('fs');
 
-const WeatherImage = require('./weatherimage');
+import { WeatherImage } from './weatherimage';
 
 const mapQuestKey = require('../mapquestkey.json');
 
@@ -26,31 +26,42 @@ async function run() {
     // https://forecast.weather.gov/MapClick.php?lat=41.75&lon=-70.644&FcstType=digitalDWML
     
     const weatherConfig: any = {
-        agent: "ken@faubel.org",
+        name: "Onset",
         lat: "41.75",
         lon: "-70.644",
         title: "Forecast for Onset, MA",
-        days: 4
+        days: 5
     }
    
+    // "[{\"name\": \"Onset\", \"lat\": \"41.75\", \"lon\": \"-70.644\", \"title\": \"Forecast for Onset, MA\", \"days\": \"5\"}]"
+    
     const weatherImage = new WeatherImage(logger);
 
     const result = await weatherImage.getImageStream(weatherConfig);
     
     // We now get result.jpegImg
     logger.info(`Writing from data: image.jpg`);
-    fs.writeFileSync('image.jpg', result.jpegImg.data);
 
-    logger.info(`Writing from stream: image2.jpg`);
+    if (result !== null && result.jpegImg !== null ) {
+        fs.writeFileSync('image.jpg', result.jpegImg.data);
+    } else {
+        logger.error("test.ts: no jpegImg returned from weatherImage.getImageStream")
+    }
 
-    const out = fs.createWriteStream('image2.jpg');
-    const finished = util.promisify(stream.finished);
+    if (result !== null && result.stream !== null ) {
+        logger.info(`Writing from stream: image2.jpg`);
 
-    result.stream.pipe(out);
-    out.on('finish', () =>  logger.info('The jpg from a stream file was created.'));
+        const out = fs.createWriteStream('image2.jpg');
+        const finished = util.promisify(stream.finished);
 
-    await finished(out); 
+        result.stream.pipe(out);
+        out.on('finish', () =>  logger.info('The jpg from a stream file was created.'));
 
+        await finished(out); 
+    } else {
+        logger.error("test.ts: no stream returned from weatherImage.getImageStream")
+    }
+    
     logger.info("done"); 
 }
 

@@ -6,7 +6,7 @@ const WeatherData = require('./weatherdata');
 
 const fontDir = __dirname + "/../fonts";
 
-module.exports = class WeatherImage {
+export class WeatherImage {
     private weatherData: any;
 
     private logger;
